@@ -20,11 +20,11 @@ udp_endpoint::~udp_endpoint() {
     socket_.close();
 }
 
-void udp_endpoint::start() {
+void udp_endpoint::do_work() {
     io_context_.run();
 }
 
-void udp_endpoint::stop() {
+void udp_endpoint::stop_work() {
     io_context_.stop();
 }
 
@@ -54,11 +54,11 @@ void udp_endpoint::async_read() {
     socket_.async_receive_from(buffer(buf_), read_endpoint_, handler_lambda);
 }
 
-void udp_endpoint::on_read(std::function<void(const char*, const size_t&)>& func) {
+void udp_endpoint::on_read(void(*func)(const char*,const size_t&)) {
     on_read_ = func;
 }
 
-void udp_endpoint::on_write(std::function<void(const char*, const size_t&)>& func) {
+void udp_endpoint::on_write(void(*func)(const char*,const size_t&)) {
     on_write_ = func;
 }
 

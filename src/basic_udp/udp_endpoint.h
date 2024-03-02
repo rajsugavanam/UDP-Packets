@@ -10,8 +10,8 @@ class udp_endpoint {
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint read_endpoint_;
 
-        std::function<void(const char*, const size_t&)> on_read_ = [](const char*, const size_t&){};
-        std::function<void(const char*, const size_t&)> on_write_ = [](const char*, const size_t&){};
+        void(*on_read_)(const char*, const size_t&) = [](const char*, const size_t&){};
+        void(*on_write_)(const char*, const size_t&) = [](const char*, const size_t&){};
 
         static const unsigned short RECV_SIZE = 16;
         char buf_[RECV_SIZE];
@@ -29,8 +29,8 @@ class udp_endpoint {
     public:
         udp_endpoint(boost::asio::io_context& io_context);
         ~udp_endpoint();
-        void start();
-        void stop();
+        void do_work();
+        void stop_work();
         std::string get_local_ip();
         std::string get_remote_ip();
         void async_write(const std::string& data, const boost::asio::ip::udp::endpoint& endpoint);
@@ -38,10 +38,10 @@ class udp_endpoint {
          * `const char*`: the chunk of data read will be filled in here.
          * `const size_t&`: the size of what was read will be filled in here.
          */
-        void on_read(std::function<void(const char*,const size_t&)>& func);
+        void on_read(void(*func)(const char*,const size_t&));
         /*
          * `const char*`: the chunk of data sent will be filled in here.
          * `const size_t&`: the size of what was written will be filled in here.
          */
-        void on_write(std::function<void(const char*,const size_t&)>& func);
+        void on_write(void(*func)(const char*,const size_t&));
 };
