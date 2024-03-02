@@ -4,10 +4,10 @@ set(CLIENT udp_client)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../../lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../../archives)
 
-set(INCDIRS "~/Documents/Programming/libraries/boost_1_71_0")
-set(LINKDIRS "~/Documents/Programming/libraries/boost_1_71_0/stage/lib")
+set(INCDIRS "../../lib/boost_1_71_0")
+set(LINKDIRS "../../lib/boost_1_71_0/stage/lib")
 
 
 add_library(${SERVER} STATIC server.cpp udp_endpoint.cpp)

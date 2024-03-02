@@ -6,4 +6,6 @@ Makefile
 
 compile_commands.json
 
+boost*
+
 .cache/
