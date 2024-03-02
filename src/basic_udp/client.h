@@ -1,3 +1,5 @@
+#pragma once
+
 #include "udp_endpoint.h"
 #include "boost/asio/io_context.hpp"
 #include "boost/asio/ip/udp.hpp"
@@ -10,15 +12,8 @@ class udp_client : public udp_endpoint {
         boost::asio::ip::udp::resolver::results_type endpoint_iterator_;
 
         void read_handler(const boost::system::error_code& ec, const size_t& transferred) {
-            /* print_handler_error(ec); */
-            /* if (transferred > 0) { */
-            /*     std::cout << buf_ << std::endl; */
-            /* } */
-            on_read_(buf_, transferred);
         }
         void write_handler(const boost::system::error_code& ec, const size_t& transferred) {
-            /* print_handler_error(ec); */
-            on_write_(buf_, transferred);
         }
 
     public:

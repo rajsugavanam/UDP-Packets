@@ -1,8 +1,11 @@
 #include "udp_endpoint.h"
 
+#include "boost/asio/detail/cstdint.hpp"
 #include "boost/asio/io_context.hpp"
 #include "boost/asio/ip/udp.hpp"
 #include "boost/system/error_code.hpp"
+#include <_types/_uint16_t.h>
+#include <array>
 #include <iostream>
 
 using namespace boost::asio;
@@ -11,7 +14,8 @@ using namespace boost::system;
 
 udp_endpoint::udp_endpoint(boost::asio::io_context& io_context)
     : io_context_(io_context),
-    socket_(boost::asio::ip::udp::socket(io_context)) {
+    socket_(boost::asio::ip::udp::socket(io_context)),
+    buf_(MAX_RECV_BYTES) {
 
     socket_.open(boost::asio::ip::udp::v4());
 }
@@ -32,33 +36,25 @@ void udp_endpoint::async_write(const std::string& data, const udp::endpoint& end
     auto handler_lambda =
         [this](const error_code& ec, const size_t& transferred){
             write_handler(ec, transferred);
+            on_write_(buf_, transferred);
         };
-    for (int i=0; i<data.size(); i=i+RECV_SIZE) {
-        /* char data_arr[RECV_SIZE]; */
-        std::vector<char> data_arr;
-        for (int j=0; j<RECV_SIZE; j++) {
-            if (i+j<data.size()) {
-                data_arr.push_back(data[i+j]);
-            } else {
-                break;
-            }
-        }
-        socket_.async_send_to(buffer(data_arr), endpoint, handler_lambda);
-    }
+    socket_.async_send_to(buffer(data), endpoint, handler_lambda);
 }
 
 void udp_endpoint::async_read() {
     auto handler_lambda = [this](const error_code& ec, const size_t& transferred){
+        on_read_(buf_, transferred);
         read_handler(ec, transferred);
     };
     socket_.async_receive_from(buffer(buf_), read_endpoint_, handler_lambda);
+
 }
 
-void udp_endpoint::on_read(void(*func)(const char*,const size_t&)) {
+void udp_endpoint::on_read(void(*func)(const std::vector<char>&,const size_t&)) {
     on_read_ = func;
 }
 
-void udp_endpoint::on_write(void(*func)(const char*,const size_t&)) {
+void udp_endpoint::on_write(void(*func)(const std::vector<char>&,const size_t&)) {
     on_write_ = func;
 }
 
