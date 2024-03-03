@@ -33,24 +33,33 @@ void udp_endpoint::stop_work() {
 }
 
 void udp_endpoint::async_write(const std::string& data, const udp::endpoint& endpoint) {
-    auto handler_lambda =
-        [this](const error_code& ec, const size_t& transferred){
-            write_handler(ec, transferred);
-            on_write_(buf_, transferred);
-        };
-    socket_.async_send_to(buffer(data), endpoint, handler_lambda);
+    if (data.size() > MAX_RECV_BYTES) {
+        std::cout
+            << "The data could not be sent to "
+            << endpoint
+            << "because the packet size exceeded the maximum of "
+            << MAX_RECV_BYTES
+            << "bytes." << std::endl;
+    } else {
+        auto handler_lambda =
+            [this](const error_code& ec, const size_t& transferred){
+                write_handler(ec, transferred);
+                on_write_(buf_, transferred);
+            };
+        socket_.async_send_to(buffer(data), endpoint, handler_lambda);
+    }
 }
 
 void udp_endpoint::async_read() {
     auto handler_lambda = [this](const error_code& ec, const size_t& transferred){
-        on_read_(buf_, transferred);
+        on_read_(buf_, read_endpoint_, transferred);
         read_handler(ec, transferred);
     };
     socket_.async_receive_from(buffer(buf_), read_endpoint_, handler_lambda);
 
 }
 
-void udp_endpoint::on_read(void(*func)(const std::vector<char>&,const size_t&)) {
+void udp_endpoint::on_read(void(*func)(const std::vector<char>&,const ip::udp::endpoint&,const size_t&)) {
     on_read_ = func;
 }
 

@@ -16,10 +16,10 @@ target_include_directories(${PACKET_CLIENT} PRIVATE ${CMAKE_SOURCE_DIR}/src/basi
 target_include_directories(${PACKET_SERVER} PRIVATE ${CMAKE_SOURCE_DIR}/src/basic_udp)
 
 target_link_libraries(${PACKET_CLIENT}
-    ${CMAKE_SOURCE_DIR}/archives/udp_client.a
-    ${CMAKE_SOURCE_DIR}/archives/udp_server.a
+    udp_client
+    udp_server
 )
 target_link_libraries(${PACKET_SERVER}
-    ${CMAKE_SOURCE_DIR}/archives/udp_client.a
-    ${CMAKE_SOURCE_DIR}/archives/udp_server.a
+    udp_client
+    udp_server
 )

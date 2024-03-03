@@ -1,10 +1,14 @@
+#include "packet_server.h"
+
 #include "boost/asio.hpp"
 #include "boost/asio/io_context.hpp"
 #include <algorithm>
 #include <iterator>
 #include <server.h>
 
-void foo(const std::vector<char>& buf, const size_t& transferred) {
+using namespace boost::asio::ip;
+
+void foo(const std::vector<char>& buf, const udp::endpoint& endpt, const size_t& transferred) {
     if (transferred > 0) {
         for (int i=0; i<transferred; i++) {
             std::cout << buf[i];

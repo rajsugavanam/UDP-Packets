@@ -12,14 +12,19 @@ class udp_endpoint {
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint read_endpoint_;
 
-        void(*on_read_)(const std::vector<char>&, const size_t&) = [](const
-                std::vector<char>&, const size_t&){};
-        void(*on_write_)(const std::vector<char>&, const size_t&) = [](const
-                std::vector<char>&, const size_t&){};
+        void(*on_read_)(
+                const std::vector<char>&,
+                const boost::asio::ip::udp::endpoint&,
+                const size_t&) =
+            [](const std::vector<char>&, const boost::asio::ip::udp::endpoint&,
+                    const size_t&){};
+        void(*on_write_)(
+                const std::vector<char>&, const size_t&) =
+            [](const std::vector<char>&, const size_t&){};
 
-        static const unsigned short MAX_RECV_BYTES = 4096;
+        static const unsigned short MAX_RECV_BYTES = 16384; // say goodbye to 16kb of memory :)
         /* char buf_[RECV_SIZE]; */
-        std::vector<char> buf_;
+        std::vector<char> buf_; // initialized with a max size of MAX_RECV_BYTES
 
         void async_read();
         void print_handler_error(const boost::system::error_code& ec);
@@ -37,14 +42,7 @@ class udp_endpoint {
         std::string get_local_ip();
         std::string get_remote_ip();
         void async_write(const std::string& data, const boost::asio::ip::udp::endpoint& endpoint);
-        /*
-         * `std::vector<char>&`: the chunk of data read will be filled in here.
-         * `const size_t&`: the size of what was read will be filled in here.
-         */
-        void on_read(void(*func)(const std::vector<char>&,const size_t&));
-        /*
-         * `std::vector<char>&`: the chunk of data sent will be filled in here.
-         * `const size_t&`: the size of what was written will be filled in here.
-         */
+        void on_read(void(*func)(const std::vector<char>&,const
+                    boost::asio::ip::udp::endpoint&,const size_t&));
         void on_write(void(*func)(const std::vector<char>&,const size_t&));
 };
