@@ -6,6 +6,6 @@ Makefile
 
 compile_commands.json
 
-boost*
+lib/
 
 .cache/
